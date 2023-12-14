@@ -1,0 +1,86 @@
+#include <iostream>
+
+typedef struct {
+  unsigned int term;
+  unsigned int doc;
+  unsigned int count;
+} triple;
+
+__global__ void
+parallel_sort(triple *index_array, size_t array_size)
+{
+  // implementing simple odd-even transposition mergesort
+  int sort_index = ThreadIdx.x * 2;
+  if (sort_index >= array_size) {
+    return;
+  }
+
+  for (int i = 0; i < array_size; i++) {
+    current_index = sort_index + (i % 2);
+
+    if (current_index + 1 < array_size && index_array[i].term < index_array[i + 1].term) {
+      swap(index_array[i], index_array[i + 1]);
+    }
+     
+    __syncthreads();
+  }
+  
+  for (int i = 0; i < array_size; i++) {
+    current_index = sort_index + (i % 2);
+
+    if (current_index + 1 < array_size && index_array[i].doc < index_array[i + 1].doc) {
+      swap(index_array[i], index_array[i + 1]);
+    }
+     
+    __syncthreads();
+  }  
+}
+
+
+int main(int argc, char **argv) {
+  if(argc != 2) {
+    std::cout << "Usage: " << argv[0] << std::endl;
+    return;
+  }
+
+  std::ifstream triples_file(argv[1]);
+  std::vector<triple> triples;
+
+  if(!triples_file.is_open()) {
+    std::cout << argv[1] << " is an invalid file" << std::endl;
+    return;
+  }
+  
+  std::string line;
+  while(std::getline(triples_file), line) {
+    std::istringstream string_stream;
+    std::string current_value;
+    std::vector<int> current_triple;
+    
+    while(std::getline(string_stream, current_value, ",")) {
+      current_triple.push_back(std::atoi(current_value.c_str()));
+    }
+
+    if(current_triple.size() != 3) {
+      std::cout << "invalid length triple, ignoring" << std::endl;
+
+      continue;
+    }
+
+    triples.emplace_back({current_triple[0], current_triple[1], current_triple[2]});
+  }
+
+  triple* d_triples;
+  cudaMalloc(&d_triples, triples.size() * sizeof(triple));
+  cudaMemcpy(d_triples, triples.data(), triples.size() * sizeof(triple), cudaMemcpyHostToDevice);
+  
+  parallel_sort<<<1, triples.size() / 2>>>(triples.data(), triples.size());
+
+  cudaMemcpy(d_triples, triples.data(), triples.size() * sizeof(triple), cudaMemcpyDeviceToHost);
+
+  for (auto &i: triples) {
+    std::cout << i.term << " " << i.doc << " " << i.count << std::endl;
+  }
+
+  return;
+}
