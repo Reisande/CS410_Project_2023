@@ -36,6 +36,8 @@ parallel_sort(triple *index_array, size_t array_size)
      
     __syncthreads();
   }
+
+  printf("%d %d %d; ", index_array[sort_index].term, index_array[sort_index].doc, index_array[sort_index].index);
 }
 
 
@@ -79,7 +81,8 @@ int main(int argc, char **argv) {
   
   parallel_sort<<<1, triples.size() / 2>>>(triples.data(), triples.size());
 
-  cudaMemcpy(d_triples, triples.data(), triples.size() * sizeof(triple), cudaMemcpyDeviceToHost);
+  triple *out_triples = (triple *)malloc(sizeof(triple) * triples.size());
+  cudaMemcpy(out_triples, d_triples, triples.size() * sizeof(triple), cudaMemcpyDeviceToHost);
 
   for (auto &i: triples) {
     std::cout << i.term << " " << i.doc << " " << i.count << std::endl;
