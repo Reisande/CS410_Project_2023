@@ -1,9 +1,10 @@
-#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <fstream>
 
 typedef struct {
   unsigned int term;
@@ -15,30 +16,26 @@ __global__ void
 parallel_sort(triple *index_array, size_t array_size)
 {
   // implementing simple odd-even transposition mergesort
-  int sort_index = ThreadIdx.x * 2;
+  int sort_index = threadIdx.x * 2;
   if (sort_index >= array_size) {
     return;
   }
 
   for (int i = 0; i < array_size; i++) {
-    current_index = sort_index + (i % 2);
+    auto current_index = sort_index + (i % 2);
 
-    if (current_index + 1 < array_size && index_array[i].term < index_array[i + 1].term) {
-      swap(index_array[i], index_array[i + 1]);
+    auto a = index_array[i];
+    auto b = index_array[i + 1];
+    if (current_index + 1 < array_size &&
+        ((a.term == b.term && a.doc < b.doc)
+         || a.term < b.term)) {
+      auto temp = b;
+      b = a;
+      a = temp;
     }
      
     __syncthreads();
   }
-  
-  for (int i = 0; i < array_size; i++) {
-    current_index = sort_index + (i % 2);
-
-    if (current_index + 1 < array_size && index_array[i].doc < index_array[i + 1].doc) {
-      swap(index_array[i], index_array[i + 1]);
-    }
-     
-    __syncthreads();
-  }  
 }
 
 
@@ -57,12 +54,13 @@ int main(int argc, char **argv) {
   }
   
   std::string line;
-  while(std::getline(triples_file), line) {
-    std::istringstream string_stream;
+
+  while(std::getline(triples_file, line)) {
+    std::istringstream string_stream(line);
     std::string current_value;
-    std::vector<int> current_triple;
+    std::vector<unsigned int> current_triple;
     
-    while(std::getline(string_stream, current_value, ",")) {
+    while(std::getline(string_stream, current_value, ',')) {
       current_triple.push_back(std::atoi(current_value.c_str()));
     }
 
@@ -72,7 +70,7 @@ int main(int argc, char **argv) {
       continue;
     }
 
-    triples.emplace_back({current_triple[0], current_triple[1], current_triple[2]});
+    triples.emplace_back(triple({current_triple[0], current_triple[1], current_triple[2]}));
   }
 
   triple* d_triples;
