@@ -6,14 +6,14 @@
 
 ## CUDA: for CUDA install the relevant cuda driver for your GPU (the author used an NVIDIA GeForce RTX 3060 Ti). Then follow the instructions here: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html# to install the cuda toolkit for the GPU. This code was compiled with nvcc version  12.3, V12.3.103 and Nvidia GPU driver 545. Then install Thrust via 
 	### git submodule init ; git submodule update
- 	### Then build using 
+ ## Then build using 
 ### nvcc ./inverted.cu -std=c++20 -I./thrust/ -I./thrust/dependencies/libcudacxx/ -I./thrust/dependencies/cub --extended-lambda -Xcompiler=-fno-gnu-unique --gpu-architecture=compute_86 --gpu-code=compute_86,sm_86 -O3 -o ./cuda.out # (for SM 86, your GPU will vary) ; ./cuda.out <file> 
-### Replacing with the relevant information where necessary.
+	## Replacing with the relevant information where necessary.
 
 ## C++: build and run with: 
 	g++ ./inverted.cpp -std=c++11 -O3 ; ./a.out <file>
-## Replacing <file> with your expected input file.
+	## Replacing <file> with your expected input file.
 
 ## Local Python (inverted.py): build and run with:
-## Rm -rf terms/* docs/* index.txt ; python3 ./inverted.py <file>
-	Replacing <fiile> with your expected input file
+### Rm -rf terms/* docs/* index.txt ; python3 ./inverted.py <file>
+## Replacing <fiile> with your expected input file
