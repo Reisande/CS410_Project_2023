@@ -31,13 +31,12 @@ def generate_doc_files(file: str) -> List[str]:
             temp_file = open(file_name, "x")
             temp_file.close()
 
-        print("appending: " + file_name)
+
         return_list.add(file_name)
 
         write_file = open(file_name, "a")
 
         write_file.write(line)
-        print("writing: " + line)
         
         write_file.close()
 
@@ -50,7 +49,6 @@ def generate_doc_files(file: str) -> List[str]:
 def generate_term_files(doc_files: List[str]) -> List[str]:
     return_list = set()
 
-    print(doc_files)
     sorted_docs = sorted(doc_files, key=lambda x: int(x.split("/")[-1]))
     for file in sorted_docs:
         doc_file = open(file, 'r')
@@ -78,7 +76,6 @@ def generate_term_files(doc_files: List[str]) -> List[str]:
             write_file = open(file_name, "a")
 
             write_file.write(line)
-            print("writing: " + line)
         
             write_file.close()
 

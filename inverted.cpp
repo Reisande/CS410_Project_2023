@@ -52,8 +52,9 @@ int main(int argc, char **argv) {
     return a.term == b.term ? a.doc < b.doc : a.term < b.term;
   });
   
-  for (auto &i: triples) {
-    std::cout << i.term << "," << i.doc << "," << i.count << std::endl;
+  std::ofstream myfile ("./cpp_index.txt");
+  for (int i = 0; i < triples.size(); i++) {
+    myfile << triples[i].term << "," << triples[i].doc << "," << triples[i].count << std::endl;
   }
 
   return 0;
