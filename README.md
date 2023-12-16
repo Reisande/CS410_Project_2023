@@ -9,7 +9,7 @@
  
  ## Then build using  (Replacing with the relevant information where necessary)
 
-	### nvcc ./inverted.cu -std=c++20 -I./thrust/ -I./thrust/dependencies/libcudacxx/ -I./thrust/dependencies/cub --extended-lambda -Xcompiler=-fno-gnu-unique --gpu-architecture=compute_86 --gpu-code=compute_86,sm_86 -O3 -o ./cuda.out # (for SM 86, your GPU will vary) ; ./cuda.out <file> 
+	### nvcc ./inverted.cu -std=c++20 -I./thrust/ -I./thrust/dependencies/libcudacxx/ -I./thrust/dependencies/cub --extended-lambda -Xcompiler=-fno-gnu-unique --gpu-architecture=compute_86 --gpu-code=compute_86,sm_86 -O3 -o ./cuda.out # (for SM 86, your GPU will vary) ; ./cuda.out <file>
 
 ## C++: build and run with:  (Replacing <file> with your expected input file.)
 	### g++ ./inverted.cpp -std=c++11 -O3 ; ./a.out <file>
